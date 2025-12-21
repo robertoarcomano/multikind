@@ -4,7 +4,7 @@ metadata:
   name: cassandra
 spec:
   serviceName: cassandra
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: cassandra
@@ -67,3 +67,17 @@ spec:
     app: cassandra
   clusterIP: None  # Headless service
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-nodeport
+spec:
+  type: NodePort
+  ports:
+  - port: 9042
+    targetPort: 9042
+    # nodePort: 30042  # Opzionale: specifica una porta fissa (30000-32767)
+    protocol: TCP
+    name: cql
+  selector:
+    app: cassandra
