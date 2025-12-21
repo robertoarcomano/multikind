@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cassandra
+spec:
+  serviceName: cassandra
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cassandra
+  template:
+    metadata:
+      labels:
+        app: cassandra
+    spec:
+      containers:
+      - name: cassandra
+        image: cassandra:latest
+        ports:
+        - containerPort: 9042
+        env:
+        - name: MAX_HEAP_SIZE
+          value: "10G"
+        - name: CASSANDRA_CLUSTER_NAME
+          value: "CassandraCluster"
+        - name: CASSANDRA_DC
+          value: "DC1"
+        - name: CASSANDRA_RACK
+          value: "Rack1"
+        - name: CASSANDRA_SEEDS
+          value: "cassandra-0.cassandra.default.svc.cluster.local"  # usiamo solo il nome del pod, il servizio gestirà la risoluzione
+        - name: CASSANDRA_AUTO_BOOTSTRAP
+          value: "true"
+        volumeMounts:
+        - name: cassandra-data
+          mountPath: /var/lib/cassandra
+      volumes:
+      - name: cassandra-data
+        persistentVolumeClaim:
+          claimName: cassandra-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra
+spec:
+  ports:
+    - port: 9042
+      targetPort: 9042
+  selector:
+    app: cassandra
+  clusterIP: None # Questo rende il servizio un Headless Service cruciale per i StatefulSet
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cassandra-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cassandra
+spec:
+  serviceName: cassandra
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cassandra
+  template:
+    metadata:
+      labels:
+        app: cassandra
+    spec:
+      containers:
+      - name: cassandra
+        image: cassandra:latest
+        ports:
+        - containerPort: 9042
+        env:
+        - name: MAX_HEAP_SIZE
+          value: "10G"
+        - name: CASSANDRA_CLUSTER_NAME
+          value: "CassandraCluster"
+        - name: CASSANDRA_DC
+          value: "DC1"
+        - name: CASSANDRA_RACK
+          value: "Rack1"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CASSANDRA_SEEDS
+          value: "cassandra-0.cassandra.$(POD_NAMESPACE).svc.cluster.local"
+        - name: CASSANDRA_AUTO_BOOTSTRAP
+          value: "true"
+        volumeMounts:
+        - name: cassandra-data
+          mountPath: /var/lib/cassandra
+  volumeClaimTemplates:
+  - metadata:
+      name: cassandra-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra
+spec:
+  ports:
+    - port: 9042
+      targetPort: 9042
+  selector:
+    app: cassandra
+  clusterIP: None  # Headless service
+
