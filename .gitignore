@@ -209,3 +209,7 @@ __marimo__/
 # Ignore Terraform configuration
 .terraform*
 terraform.*
+.terraform.*
+terraform/cassandra/terraform.tfstate.backup
+terraform/cassandra/terraform.tfstate
+terraform/cassandra/.terraform.lock.hcl
