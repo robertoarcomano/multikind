@@ -40,7 +40,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: CASSANDRA_SEEDS
-          value: "cassandra-0.cassandra.$(POD_NAMESPACE).svc.cluster.local"
+          value: "cassandra-0.cassandra.default.svc.cluster.local"
         - name: CASSANDRA_AUTO_BOOTSTRAP
           value: "true"
         volumeMounts:
@@ -66,7 +66,7 @@ spec:
   selector:
     app: cassandra
   clusterIP: None  # Headless service
-
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -76,7 +76,7 @@ spec:
   ports:
   - port: 9042
     targetPort: 9042
-    # nodePort: 30042  # Opzionale: specifica una porta fissa (30000-32767)
+    nodePort: 30001  # Opzionale: specifica una porta fissa (30000-32767)
     protocol: TCP
     name: cql
   selector:

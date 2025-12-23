@@ -18,7 +18,7 @@ class Cassandra:
 
     def __init__(self, key_space):
         self.host = '172.22.0.4'
-        self.port = 30983
+        self.port = 30001
         self.cluster = Cluster([self.host], port=self.port, execution_profiles={EXEC_PROFILE_DEFAULT: self.get_profile()}, max_schema_agreement_wait=10)
         self.session = self.cluster.connect()
         self.session.execute(f"""
@@ -172,5 +172,5 @@ Cassandra.multiprocess_insert(
     key_space=key_space,
     total_records=num_records,
     n_processes=100,     
-    concurrency=512    
+    concurrency=100    
 )
