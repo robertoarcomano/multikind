@@ -1,8 +1,0 @@
-all:
-  hosts:
-    containers:
-      ansible_host: localhost
-      ansible_connection: kubernetes.core.k8s_exec
-      ansible_kubectl: kubectl
-      ansible_k8s_label_selector: app=ansibletest
-      ansible_k8s_namespace: default

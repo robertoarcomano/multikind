@@ -1,0 +1,27 @@
+- name: Exec in a Kubernetes pod using kubectl
+  hosts: localhost
+  gather_facts: no
+  environment:
+    KUBECONFIG: "{{ lookup('env', 'HOME') }}/.kube/config"
+
+  tasks:
+    - name: check hostname
+      shell: kubectl exec -n default ansibletest-0 -- hostname
+      register: result
+      changed_when: false
+
+    - name: show the result
+      debug:
+        var: result.stdout
+
+    - name: Scale statefulsets to 10 replicas
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: StatefulSet
+          metadata:
+            name: ansibletest
+            namespace: default
+          spec:
+            replicas: 10

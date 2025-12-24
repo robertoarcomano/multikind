@@ -1,0 +1,27 @@
+- name: Run hostname on all pods via kubectl
+  hosts: localhost
+  gather_facts: no
+  environment:
+    KUBECONFIG: "{{ lookup('env', 'HOME') }}/.kube/config"
+
+  tasks:
+    - name: Get all pods in default namespace
+      kubernetes.core.k8s_info:
+        kind: Pod
+        namespace: default
+      register: pod_list
+
+    - name: Run hostname on each pod
+      shell: kubectl exec -n default {{ item.metadata.name }} -- hostname
+      register: result
+      changed_when: false
+      loop: "{{ pod_list.resources }}"
+      loop_control:
+        label: "{{ item.metadata.name }}"
+
+    - name: Show only hostname
+      debug:
+        msg: "{{ item.stdout }}"
+      loop: "{{ result.results }}"
+      loop_control:
+        label: "{{ item.item.metadata.name }}"
