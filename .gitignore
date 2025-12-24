@@ -213,3 +213,10 @@ terraform.*
 terraform/cassandra/terraform.tfstate.backup
 terraform/cassandra/terraform.tfstate
 terraform/cassandra/.terraform.lock.hcl
+
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+*.tfstate
+*.tfstate.backup
