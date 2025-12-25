@@ -1,0 +1,37 @@
+- name: Scale e exec paralleli
+  hosts: localhost
+  gather_facts: no
+  environment:
+    KUBECONFIG: "{{ lookup('env', 'HOME') }}/.kube/config"
+  tasks:
+    - name: Scale StatefulSet
+      kubernetes.core.k8s_scale:
+        api_version: apps/v1
+        kind: StatefulSet
+        name: ansibletest
+        namespace: default
+        replicas: 10
+      register: scaled
+
+    - name: Wait rollout
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: StatefulSet
+        name: ansibletest
+        namespace: default
+      register: ss
+      until: ss.resources[0].status.readyReplicas == 10
+      retries: 30
+      delay: 10
+
+    - name: Get hostname da tutti i pod (parallelo)
+      shell: kubectl exec ansibletest-{{ item }} -n default -- hostname
+      loop: "{{ range(0, 10) | list }}"
+      register: results
+      changed_when: false
+      delegate_to: localhost
+
+    - name: Mostra risultati
+      debug:
+        msg: "Pod {{ item.item }}: {{ item.stdout }}"
+      loop: "{{ results.results }}"
