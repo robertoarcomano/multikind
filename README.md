@@ -34,4 +34,23 @@ chmod +x install-opentofu.sh
 rm -f install-opentofu.sh
 ```
 
+## Initialize tofu
+`
+tofu init -upgrade
+`
+
 ## Install Cassandra
+`
+tofu apply -var "enable_cassandra=true" -var "cassandra_replicas=3" -auto-approve
+`
+
+## Uninstall Cassandra
+### 1. Remove StatefulSet/Pods/Services
+`
+tofu apply -var "enable_cassandra=false" -var "cassandra_replicas=3" -auto-approve
+`
+### 2. Remove pvc as well
+`
+kubectl delete pvc -l app=cassandra
+`
+
