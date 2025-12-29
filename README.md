@@ -1,8 +1,14 @@
 # Multikind
 Multi-project on kind tutorial - k8s
 
-## Install and test kind
+
+<details>
+<summary>
+<b>Kind</b>
+</summary>
+
 ### 1. Install kind
+
 ```
 curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64
 chmod +x ./kind
@@ -23,10 +29,18 @@ source ~/.bashrc
 ```
 kubectl cluster-info
 kubectl get nodes
-kubectl get pods -A
+kubectl get pods -A 
 ```
+</details>
 
-## Install Opentofu
+
+<br>
+<details>
+<summary>
+<b>Opentofu</b>
+</summary>
+
+### 1. Install Opentofu
 ```
 curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o install-opentofu.sh
 chmod +x install-opentofu.sh
@@ -34,23 +48,47 @@ chmod +x install-opentofu.sh
 rm -f install-opentofu.sh
 ```
 
-## Initialize tofu
-`
+### 2. Initialize tofu
+```
 tofu init -upgrade
-`
+```
+</details>
 
-## Install Cassandra
-`
+<br>
+<details>
+<summary>
+<b>Cassandra</b>
+</summary>
+
+### 1. Install Cassandra
+```
 tofu apply -var "enable_cassandra=true" -var "cassandra_replicas=3" -auto-approve
-`
+```
 
-## Uninstall Cassandra
-### 1. Remove StatefulSet/Pods/Services
-`
+### 2. Test Cassandra
+#### 2.1. Install virtual environment
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+#### 2.2. Install cassandra-driver
+```
+pip install cassandra-driver
+```
+#### 2.3. Launch test
+```
+python cassandra/main.py
+```
+
+
+### 3. Uninstall Cassandra
+#### 3.1. Remove StatefulSet/Pods/Services
+```
 tofu apply -var "enable_cassandra=false" -var "cassandra_replicas=3" -auto-approve
-`
-### 2. Remove pvc as well
-`
+```
+#### 3.2. Remove pvc as well
+```
 kubectl delete pvc -l app=cassandra
-`
+```
+</details>
 
