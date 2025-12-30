@@ -92,3 +92,30 @@ kubectl delete pvc -l app=cassandra
 ```
 </details>
 
+<br>
+
+<details>
+<summary><b>K8ssandra</b></summary>
+
+### 1. Enter k8ssandra directory
+```
+cd k8ssandra
+```
+
+### 2. Install cert-manager
+```
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set installCRDs=true
+```
+
+### 3. Install k8ssandra operator
+```
+helm repo add k8ssandra https://helm.k8ssandra.io/stable
+helm repo update
+helm install k8ssandra-operator k8ssandra/k8ssandra-operator -n k8ssandra-operator --set global.clusterScoped=true --create-namespace
+sleep 60
+kubectl create -f k8c1.yaml
+```
+</details>
+
