@@ -8,6 +8,16 @@ variable "enable_ssh_server" {
   default = false
 }
 
+variable "enable_mariadb" {
+  type = bool
+  default = false
+}
+
+variable "mariadb_replicas" {
+  type = number
+  default = 1
+}
+
 variable "replicas" {
   type = number
   default = 1

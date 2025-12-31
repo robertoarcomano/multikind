@@ -4,6 +4,12 @@ module "ssh_server" {
   replicas = var.replicas
 }
 
+module "mariadb" {
+  source = "./modules/mariadb"
+  count = var.enable_mariadb ? 1 : 0
+  mariadb_replicas = var.mariadb_replicas
+}
+
 module "pod" {
   source = "./modules/pod"
   count = var.enable_pod ? 1 : 0
